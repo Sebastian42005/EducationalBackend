@@ -2,6 +2,7 @@ package com.example.educationalbackend.controller;
 
 import com.example.educationalbackend.entity.LessonEntity;
 import com.example.educationalbackend.exception.EntityNotFoundException;
+import com.example.educationalbackend.exception.enums.EntityType;
 import com.example.educationalbackend.repository.LessonRepository;
 import com.example.educationalbackend.repository.SubjectRepository;
 import org.springframework.http.HttpHeaders;
@@ -28,17 +29,16 @@ public class LessonController {
     }
 
     @PostMapping("/{subjectId}")
-    public LessonEntity createLesson(@RequestBody LessonEntity lessonEntity, @PathVariable UUID subjectId) throws EntityNotFoundException {
-        lessonEntity.setId(null);
-        lessonEntity.setSubject(subjectRepository.findById(subjectId).orElseThrow(EntityNotFoundException::new));
+    public LessonEntity createLesson(@RequestBody LessonEntity lessonEntity, @PathVariable int subjectId) throws EntityNotFoundException {
+        lessonEntity.setSubject(subjectRepository.findById(subjectId).orElseThrow(() -> new EntityNotFoundException(EntityType.SUBJECT, subjectId)));
         return lessonRepository.save(lessonEntity);
     }
 
     @PutMapping("/{id}/pdf")
-    public Map<String, String> setLessonPDFs(@PathVariable UUID id,
+    public Map<String, String> setLessonPDFs(@PathVariable int id,
                                              @RequestParam("studentFile") MultipartFile studentFile,
                                              @RequestParam("teacherFile") MultipartFile teacherFile) throws EntityNotFoundException, IOException {
-        LessonEntity lessonEntity = lessonRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        LessonEntity lessonEntity = lessonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EntityType.LESSON, id));
         lessonEntity.setStudentPDFContent(studentFile.getBytes());
         lessonEntity.setStudentPDFContentType(studentFile.getContentType());
         lessonEntity.setTeacherPDFContent(teacherFile.getBytes());
@@ -53,28 +53,28 @@ public class LessonController {
     }
 
     @GetMapping("/{id}")
-    public LessonEntity getLessonById(@PathVariable UUID id) throws EntityNotFoundException {
-        return lessonRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    public LessonEntity getLessonById(@PathVariable int id) throws EntityNotFoundException {
+        return lessonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EntityType.LESSON, id));
     }
 
     @GetMapping("/{id}/student-pdf")
-    public ResponseEntity<byte[]> getStudentPDF(@PathVariable UUID id) throws EntityNotFoundException {
-        LessonEntity lesson = lessonRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    public ResponseEntity<byte[]> getStudentPDF(@PathVariable int id) throws EntityNotFoundException {
+        LessonEntity lesson = lessonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EntityType.LESSON, id));
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Frame-Options", "ALLOW-FROM *");
         return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(lesson.getStudentPDFContent());
     }
 
     @GetMapping("/{id}/teacher-pdf")
-    public ResponseEntity<byte[]> getTeacherPDF(@PathVariable UUID id) throws EntityNotFoundException {
-        LessonEntity lesson = lessonRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    public ResponseEntity<byte[]> getTeacherPDF(@PathVariable int id) throws EntityNotFoundException {
+        LessonEntity lesson = lessonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EntityType.LESSON, id));
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Frame-Options", "ALLOW-FROM *");
         return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(lesson.getTeacherPDFContent());
     }
 
     @DeleteMapping("/{id}")
-    public Map<String, String> deleteLesson(@PathVariable UUID id) {
+    public Map<String, String> deleteLesson(@PathVariable int id) {
         lessonRepository.deleteById(id);
         return Map.of("message", "Lesson deleted successfully");
     }

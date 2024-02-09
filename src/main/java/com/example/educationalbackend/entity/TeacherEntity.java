@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -17,7 +18,12 @@ import java.util.UUID;
 public class TeacherEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    int id;
 
+    @ManyToMany(mappedBy = "teachers", fetch = FetchType.LAZY)
+    private List<StudentEntity> students;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    private List<SubjectEntity> subjects;
 }

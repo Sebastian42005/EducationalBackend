@@ -18,8 +18,8 @@ import java.util.UUID;
 public class LessonEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    int id;
     String name;
     byte[] teacherPDFContent;
     String teacherPDFContentType;

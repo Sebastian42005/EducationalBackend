@@ -16,7 +16,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     private final Logger log = LoggerFactory.getLogger(CustomAuthenticationEntryPoint.class);
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         log.debug("Pre-authenticated entry point called. Rejecting access");
         response.sendError(HttpServletResponse.SC_FORBIDDEN, "Bad credentials");
     }
