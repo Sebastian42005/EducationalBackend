@@ -1,7 +1,7 @@
-package com.example.educationalbackend.config;
+package com.example.educationalbackend.config.jwt;
 
 import com.example.educationalbackend.entity.UserEntity;
-import com.example.educationalbackend.exception.WrongLoginCredentialsException;
+import com.example.educationalbackend.exception.exceptions.WrongLoginCredentialsException;
 import com.example.educationalbackend.repository.UserRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,13 +23,13 @@ public class JwtUserDetailsService implements UserDetailsService {
         UserEntity userEntity = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("No user found with email: " + email));
         return User.withUsername(userEntity.getEmail())
                 .password(userEntity.getPassword())
-                .roles(userEntity.getUserRole()).build();
+                .roles(userEntity.getRole().name()).build();
     }
 
     public UserDetails verifyUser(String username, String password) throws WrongLoginCredentialsException {
         UserEntity user = userRepository.login(username, password).orElseThrow(WrongLoginCredentialsException::new);
         return User.withUsername(user.getEmail())
                 .password(user.getPassword())
-                .roles(user.getUserRole()).build();
+                .roles(user.getRole().name()).build();
     }
 }

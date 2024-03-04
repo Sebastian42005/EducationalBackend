@@ -3,6 +3,7 @@ package com.example.educationalbackend.controller;
 import com.example.educationalbackend.entity.SubjectEntity;
 import com.example.educationalbackend.entity.TeacherEntity;
 import com.example.educationalbackend.service.TeacherService;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,5 +36,10 @@ public class TeacherController {
     @GetMapping("/{id}")
     public ResponseEntity<TeacherEntity> getTeacher(@PathVariable int id) {
         return ResponseEntity.ok(teacherService.getTeacher(id));
+    }
+
+    @PutMapping("/{id}/student/{studentId}")
+    public ResponseEntity<TeacherEntity> addStudentToTeacher(@PathVariable int id, @PathVariable int studentId) {
+        return ResponseEntity.ok(teacherService.addStudentToTeacher(id, studentId));
     }
 }

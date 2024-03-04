@@ -1,16 +1,16 @@
 package com.example.educationalbackend.service;
 
-import com.example.educationalbackend.config.JwtTokenUtil;
-import com.example.educationalbackend.config.JwtUserDetailsService;
-import com.example.educationalbackend.config.Role;
+import com.example.educationalbackend.config.jwt.JwtTokenUtil;
+import com.example.educationalbackend.config.jwt.JwtUserDetailsService;
 import com.example.educationalbackend.config.ShaUtils;
 import com.example.educationalbackend.dto.AuthenticationRequest;
 import com.example.educationalbackend.entity.UserEntity;
-import com.example.educationalbackend.exception.WrongLoginCredentialsException;
+import com.example.educationalbackend.exception.exceptions.WrongLoginCredentialsException;
 import com.example.educationalbackend.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
@@ -29,18 +29,19 @@ public class AuthService {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     public Map<String, String> login(AuthenticationRequest authenticationRequest) throws WrongLoginCredentialsException {
-        final UserDetails userDetails = userDetailsService.verifyUser(authenticationRequest.getEmail(), ShaUtils.decode(authenticationRequest.getPassword()));
+        final UserDetails userDetails = userDetailsService.verifyUser(authenticationRequest.email(), ShaUtils.decode(authenticationRequest.password()));
         final String token = tokenUtil.generateToken(userDetails);
         return Map.of("token", token);
     }
 
+    @Transactional
     public UserEntity register(UserEntity userEntity) {
         Optional<UserEntity> user = userRepository.findByEmail(userEntity.getEmail());
         if (user.isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "User already exists");
         }
-        userEntity.setId(null);
         userEntity.setPassword(ShaUtils.decode(userEntity.getPassword()));
         userRepository.save(userEntity);
         return userEntity;

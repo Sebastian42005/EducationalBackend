@@ -1,7 +1,8 @@
 package com.example.educationalbackend.service;
 
 import com.example.educationalbackend.entity.UserEntity;
-import com.example.educationalbackend.exception.EntityNotFoundException;
+import com.example.educationalbackend.exception.exceptions.EntityNotFoundException;
+import com.example.educationalbackend.exception.enums.EntityType;
 import com.example.educationalbackend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,6 @@ public class UserService {
     }
 
     public UserEntity getOwnUser(String email) throws EntityNotFoundException {
-        return userRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+        return userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException(EntityType.USER, email));
     }
 }

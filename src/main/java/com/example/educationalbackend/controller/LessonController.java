@@ -1,11 +1,9 @@
 package com.example.educationalbackend.controller;
 
+import com.example.educationalbackend.dto.FileDTO;
 import com.example.educationalbackend.entity.LessonEntity;
-import com.example.educationalbackend.exception.EntityNotFoundException;
-import com.example.educationalbackend.exception.enums.EntityType;
-import com.example.educationalbackend.repository.LessonRepository;
-import com.example.educationalbackend.repository.SubjectRepository;
-import org.springframework.http.HttpHeaders;
+import com.example.educationalbackend.exception.exceptions.EntityNotFoundException;
+import com.example.educationalbackend.service.LessonService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,68 +12,54 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/lesson")
 public class LessonController {
 
-    private final LessonRepository lessonRepository;
-    private final SubjectRepository subjectRepository;
-
-    public LessonController(LessonRepository lessonRepository, SubjectRepository subjectRepository) {
-        this.lessonRepository = lessonRepository;
-        this.subjectRepository = subjectRepository;
+    private final LessonService lessonService;
+    public LessonController(LessonService lessonService) {
+        this.lessonService = lessonService;
     }
 
     @PostMapping("/{subjectId}")
     public LessonEntity createLesson(@RequestBody LessonEntity lessonEntity, @PathVariable int subjectId) throws EntityNotFoundException {
-        lessonEntity.setSubject(subjectRepository.findById(subjectId).orElseThrow(() -> new EntityNotFoundException(EntityType.SUBJECT, subjectId)));
-        return lessonRepository.save(lessonEntity);
+        return lessonService.createLesson(lessonEntity, subjectId);
     }
 
     @PutMapping("/{id}/pdf")
     public Map<String, String> setLessonPDFs(@PathVariable int id,
                                              @RequestParam("studentFile") MultipartFile studentFile,
                                              @RequestParam("teacherFile") MultipartFile teacherFile) throws EntityNotFoundException, IOException {
-        LessonEntity lessonEntity = lessonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EntityType.LESSON, id));
-        lessonEntity.setStudentPDFContent(studentFile.getBytes());
-        lessonEntity.setStudentPDFContentType(studentFile.getContentType());
-        lessonEntity.setTeacherPDFContent(teacherFile.getBytes());
-        lessonEntity.setTeacherPDFContentType(teacherFile.getContentType());
-        lessonRepository.save(lessonEntity);
+        lessonService.setLessonPDFs(id, studentFile, teacherFile);
         return Map.of("message", "Image added successfully");
     }
 
     @GetMapping
     public List<LessonEntity> getAllLessons() {
-        return lessonRepository.findAll();
+        return lessonService.getAllLessons();
     }
 
     @GetMapping("/{id}")
     public LessonEntity getLessonById(@PathVariable int id) throws EntityNotFoundException {
-        return lessonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EntityType.LESSON, id));
+        return lessonService.getLessonById(id);
     }
 
     @GetMapping("/{id}/student-pdf")
     public ResponseEntity<byte[]> getStudentPDF(@PathVariable int id) throws EntityNotFoundException {
-        LessonEntity lesson = lessonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EntityType.LESSON, id));
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Frame-Options", "ALLOW-FROM *");
-        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(lesson.getStudentPDFContent());
+        FileDTO file = lessonService.getStudentPDF(id);
+        return ResponseEntity.ok().headers(file.headers()).contentType(MediaType.valueOf(file.contentType())).body(file.content());
     }
 
     @GetMapping("/{id}/teacher-pdf")
     public ResponseEntity<byte[]> getTeacherPDF(@PathVariable int id) throws EntityNotFoundException {
-        LessonEntity lesson = lessonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EntityType.LESSON, id));
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Frame-Options", "ALLOW-FROM *");
-        return ResponseEntity.ok().headers(headers).contentType(MediaType.APPLICATION_PDF).body(lesson.getTeacherPDFContent());
+        FileDTO file = lessonService.getTeacherPDF(id);
+        return ResponseEntity.ok().headers(file.headers()).contentType(MediaType.valueOf(file.contentType())).body(file.content());
     }
 
     @DeleteMapping("/{id}")
     public Map<String, String> deleteLesson(@PathVariable int id) {
-        lessonRepository.deleteById(id);
+        lessonService.deleteLesson(id);
         return Map.of("message", "Lesson deleted successfully");
     }
 }

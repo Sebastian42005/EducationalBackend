@@ -1,8 +1,9 @@
 package com.example.educationalbackend.controller;
 
 import com.example.educationalbackend.dto.AuthenticationRequest;
+import com.example.educationalbackend.dto.RegisterRequest;
 import com.example.educationalbackend.entity.UserEntity;
-import com.example.educationalbackend.exception.WrongLoginCredentialsException;
+import com.example.educationalbackend.exception.exceptions.WrongLoginCredentialsException;
 import com.example.educationalbackend.service.AuthService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,14 +23,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody AuthenticationRequest authenticationRequest) throws WrongLoginCredentialsException {
-        if (authenticationRequest.getPassword() == null || authenticationRequest.getEmail() == null) {
+        if (authenticationRequest.password() == null || authenticationRequest.email() == null) {
             throw new WrongLoginCredentialsException();
         }
         return authService.login(authenticationRequest);
     }
 
     @PostMapping("/register")
-    public UserEntity register(@RequestBody UserEntity userEntity) {
-        return authService.register(userEntity);
+    public UserEntity register(@RequestBody RegisterRequest registerRequest) {
+        return authService.register(registerRequest.getUserEntity());
     }
 }

@@ -1,4 +1,4 @@
-package com.example.educationalbackend.config;
+package com.example.educationalbackend.config.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

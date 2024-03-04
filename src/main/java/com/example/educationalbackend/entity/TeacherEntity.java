@@ -19,11 +19,12 @@ public class TeacherEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    private int id;
 
-    @ManyToMany(mappedBy = "teachers", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "teachers")
     private List<StudentEntity> students;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+
+    @ManyToMany(mappedBy = "teachers")
     private List<SubjectEntity> subjects;
 }

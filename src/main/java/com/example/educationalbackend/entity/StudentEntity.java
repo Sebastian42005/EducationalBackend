@@ -26,7 +26,4 @@ public class StudentEntity {
             joinColumns = { @JoinColumn(name = "teacher_id", referencedColumnName = "id") },
             inverseJoinColumns = { @JoinColumn(name = "student_id", referencedColumnName = "id") })
     private List<TeacherEntity> teachers;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    private List<SubjectEntity> subjects;
 }

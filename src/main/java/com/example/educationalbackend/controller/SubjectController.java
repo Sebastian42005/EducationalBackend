@@ -1,9 +1,8 @@
 package com.example.educationalbackend.controller;
 
 import com.example.educationalbackend.entity.SubjectEntity;
-import com.example.educationalbackend.exception.EntityNotFoundException;
-import com.example.educationalbackend.repository.SubjectRepository;
-import org.springframework.http.MediaType;
+import com.example.educationalbackend.exception.exceptions.EntityNotFoundException;
+import com.example.educationalbackend.service.SubjectService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,52 +10,45 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/subject")
 public class SubjectController {
 
-    private final SubjectRepository subjectRepository;
+    private final SubjectService subjectService;
 
-    public SubjectController(SubjectRepository subjectRepository) {
-        this.subjectRepository = subjectRepository;
+    public SubjectController(SubjectService subjectService) {
+        this.subjectService = subjectService;
     }
 
     @PostMapping
     public SubjectEntity createSubject(@RequestBody SubjectEntity subjectEntity) {
-        subjectEntity.setId(null);
-        return subjectRepository.save(subjectEntity);
+        return subjectService.getSubjectEntity(subjectEntity);
     }
 
     @PutMapping("/{id}/image")
-    public Map<String, String> putImageToSubject(@PathVariable UUID id, @RequestParam("file") MultipartFile image) throws EntityNotFoundException, IOException {
-        SubjectEntity subjectEntity = subjectRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        subjectEntity.setImage(image.getBytes());
-        subjectEntity.setImageType(image.getContentType());
-        subjectRepository.save(subjectEntity);
-        return Map.of("message", "Image added successfully");
+    public Map<String, String> putImageToSubject(@PathVariable int id, @RequestParam("file") MultipartFile image) throws EntityNotFoundException, IOException {
+        return subjectService.putImageToSubject(id, image);
     }
 
     @GetMapping("/{id}/image")
-    public ResponseEntity<byte[]> getImageFromSubject(@PathVariable UUID id) throws EntityNotFoundException {
-        SubjectEntity subjectEntity = subjectRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        return ResponseEntity.ok().contentType(MediaType.valueOf(subjectEntity.getImageType())).body(subjectEntity.getImage());
+    public ResponseEntity<byte[]> getImageFromSubject(@PathVariable int id) throws EntityNotFoundException {
+        return subjectService.getImageFromSubject(id);
     }
 
     @GetMapping
     public List<SubjectEntity> getAllSubjects() {
-        return subjectRepository.findAll();
+        return subjectService.getAllSubjects();
     }
 
     @GetMapping("/{id}")
-    public SubjectEntity getSubjectById(@PathVariable UUID id) throws EntityNotFoundException {
-        return subjectRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    public SubjectEntity getSubjectById(@PathVariable int id) throws EntityNotFoundException {
+        return subjectService.getSubject(id);
     }
 
     @DeleteMapping("/{id}")
-    public Map<String, String> deleteSubject(@PathVariable UUID id) {
-        subjectRepository.deleteById(id);
+    public Map<String, String> deleteSubject(@PathVariable int id) {
+        subjectService. deleteSubject(id);
         return Map.of("message", "Subject deleted successfully");
     }
 }
