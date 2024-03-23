@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class SubjectService {
+public class  SubjectService {
 
     private final SubjectRepository subjectRepository;
 

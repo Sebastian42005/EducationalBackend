@@ -1,6 +1,10 @@
 package com.example.educationalbackend.config;
 
 import com.example.educationalbackend.config.jwt.JwtRequestFilter;
+import com.example.educationalbackend.entity.UserEntity;
+import com.example.educationalbackend.entity.enums.UserRole;
+import com.example.educationalbackend.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -14,14 +18,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final UserRepository userRepository;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final JwtRequestFilter jwtRequestFilter;
 
-    public SecurityConfig(CustomAuthenticationEntryPoint authenticationEntryPoint, JwtRequestFilter jwtRequestFilter) {
-        this.authenticationEntryPoint = authenticationEntryPoint;
-        this.jwtRequestFilter = jwtRequestFilter;
+    @Bean
+    public void setUpAdminUser() {
+        UserEntity admin = userRepository.findByEmail("admin@gmail.com").orElseGet(() ->
+                UserEntity.builder()
+                        .role(UserRole.ADMIN)
+                        .email("admin@gmail.com")
+                        .firstName("Admin")
+                        .lastName("Administrator")
+                        .password(ShaUtils.decode("123456789"))
+                        .build());
+        userRepository.save(admin);
     }
 
     @Bean
@@ -43,8 +57,8 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .headers(httpSecurityHeadersConfigurer ->
-                    httpSecurityHeadersConfigurer.contentSecurityPolicy(contentSecurityPolicyConfig ->
-                            contentSecurityPolicyConfig.policyDirectives("frame-ancestors 'self' http://localhost:4200")))
+                        httpSecurityHeadersConfigurer.contentSecurityPolicy(contentSecurityPolicyConfig ->
+                                contentSecurityPolicyConfig.policyDirectives("frame-ancestors 'self' http://localhost:4200")))
                 .build();
     }
 

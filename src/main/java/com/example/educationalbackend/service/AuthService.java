@@ -4,7 +4,10 @@ import com.example.educationalbackend.config.jwt.JwtTokenUtil;
 import com.example.educationalbackend.config.jwt.JwtUserDetailsService;
 import com.example.educationalbackend.config.ShaUtils;
 import com.example.educationalbackend.dto.AuthenticationRequest;
+import com.example.educationalbackend.dto.AuthenticationResponse;
 import com.example.educationalbackend.entity.UserEntity;
+import com.example.educationalbackend.entity.enums.UserRole;
+import com.example.educationalbackend.exception.exceptions.RoleNotExistsException;
 import com.example.educationalbackend.exception.exceptions.WrongLoginCredentialsException;
 import com.example.educationalbackend.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.management.relation.RoleNotFoundException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,10 +34,10 @@ public class AuthService {
     }
 
     @Transactional
-    public Map<String, String> login(AuthenticationRequest authenticationRequest) throws WrongLoginCredentialsException {
+    public AuthenticationResponse login(AuthenticationRequest authenticationRequest) throws WrongLoginCredentialsException {
         final UserDetails userDetails = userDetailsService.verifyUser(authenticationRequest.email(), ShaUtils.decode(authenticationRequest.password()));
         final String token = tokenUtil.generateToken(userDetails);
-        return Map.of("token", token);
+        return new AuthenticationResponse(token, userDetails.getAuthorities().stream().findFirst().orElseThrow(() -> new RoleNotExistsException("")).getAuthority());
     }
 
     @Transactional

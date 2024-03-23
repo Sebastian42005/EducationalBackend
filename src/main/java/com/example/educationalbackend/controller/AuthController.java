@@ -1,6 +1,7 @@
 package com.example.educationalbackend.controller;
 
 import com.example.educationalbackend.dto.AuthenticationRequest;
+import com.example.educationalbackend.dto.AuthenticationResponse;
 import com.example.educationalbackend.dto.RegisterRequest;
 import com.example.educationalbackend.entity.UserEntity;
 import com.example.educationalbackend.exception.exceptions.WrongLoginCredentialsException;
@@ -22,7 +23,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody AuthenticationRequest authenticationRequest) throws WrongLoginCredentialsException {
+    public AuthenticationResponse login(@RequestBody AuthenticationRequest authenticationRequest) throws WrongLoginCredentialsException {
         if (authenticationRequest.password() == null || authenticationRequest.email() == null) {
             throw new WrongLoginCredentialsException();
         }
