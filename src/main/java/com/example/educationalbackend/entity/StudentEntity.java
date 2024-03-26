@@ -1,5 +1,6 @@
 package com.example.educationalbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +24,8 @@ public class StudentEntity {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "student_teacher",
-            joinColumns = { @JoinColumn(name = "teacher_id", referencedColumnName = "id") },
-            inverseJoinColumns = { @JoinColumn(name = "student_id", referencedColumnName = "id") })
+            joinColumns = { @JoinColumn(name = "student_id", referencedColumnName = "id") },
+            inverseJoinColumns = { @JoinColumn(name = "teacher_id", referencedColumnName = "id") })
+    @JsonIgnore
     private List<TeacherEntity> teachers;
 }

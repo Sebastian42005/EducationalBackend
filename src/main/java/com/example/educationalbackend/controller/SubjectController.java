@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -37,8 +38,13 @@ public class SubjectController {
     }
 
     @GetMapping
-    public List<SubjectEntity> getAllSubjects() {
-        return subjectService.getAllSubjects();
+    public List<SubjectEntity> getAllSubjects(Principal principal) {
+        return subjectService.getAllSubjects(principal);
+    }
+
+    @GetMapping("/not-free")
+    public List<SubjectEntity>getAllNotFreeSubjects() {
+        return subjectService.getAllNotFreeSubjects();
     }
 
     @GetMapping("/{id}")

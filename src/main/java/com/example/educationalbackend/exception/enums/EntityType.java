@@ -11,7 +11,8 @@ public enum EntityType {
     USER("User"),
     ADMIN("Admin"),
     TEACHER("Teacher"),
-    STUDENT("Student");
+    STUDENT("Student"),
+    FILE("File");
 
     private final String name;
 }

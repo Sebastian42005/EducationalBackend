@@ -1,10 +1,7 @@
 package com.example.educationalbackend.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,4 +24,13 @@ public class TeacherEntity {
 
     @ManyToMany(mappedBy = "teachers")
     private List<SubjectEntity> subjects;
+
+    @Override
+    public String toString() {
+        return "TeacherEntity{" +
+                "id=" + id +
+                ", students=" + students.stream().map(StudentEntity::getId).toList() +
+                ", subjects=" + subjects.stream().map(SubjectEntity::getName).toList() +
+                '}';
+    }
 }

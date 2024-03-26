@@ -1,11 +1,13 @@
 package com.example.educationalbackend.service;
 
-import com.example.educationalbackend.dto.FileDTO;
+import com.example.educationalbackend.entity.FileEntity;
 import com.example.educationalbackend.entity.LessonEntity;
 import com.example.educationalbackend.exception.exceptions.EntityNotFoundException;
 import com.example.educationalbackend.exception.enums.EntityType;
+import com.example.educationalbackend.repository.FileRepository;
 import com.example.educationalbackend.repository.LessonRepository;
 import com.example.educationalbackend.repository.SubjectRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,15 +16,12 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class LessonService {
 
     private final LessonRepository lessonRepository;
     private final SubjectRepository subjectRepository;
-
-    public LessonService(LessonRepository lessonRepository, SubjectRepository subjectRepository) {
-        this.lessonRepository = lessonRepository;
-        this.subjectRepository = subjectRepository;
-    }
+    private final FileRepository fileRepository;
 
     public LessonEntity createLesson(LessonEntity lessonEntity, int subjectId) {
         lessonEntity.setSubject(subjectRepository.findById(subjectId).orElseThrow(() -> new EntityNotFoundException(EntityType.SUBJECT, subjectId)));
@@ -31,10 +30,12 @@ public class LessonService {
 
     public void setLessonPDFs(int id, MultipartFile studentFile, MultipartFile teacherFile) throws IOException {
         LessonEntity lessonEntity = lessonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EntityType.LESSON, id));
-        lessonEntity.setStudentPDFContent(studentFile.getBytes());
-        lessonEntity.setStudentPDFContentType(studentFile.getContentType());
-        lessonEntity.setTeacherPDFContent(teacherFile.getBytes());
-        lessonEntity.setTeacherPDFContentType(teacherFile.getContentType());
+        FileEntity studentFileEntity = new FileEntity(studentFile.getBytes(), studentFile.getContentType());
+        FileEntity teacherFileEntity = new FileEntity(teacherFile.getBytes(), teacherFile.getContentType());
+        fileRepository.save(studentFileEntity);
+        fileRepository.save(teacherFileEntity);
+        lessonEntity.setStudentPDF(studentFileEntity.getId());
+        lessonEntity.setTeacherPDF(teacherFileEntity.getId());
         lessonRepository.save(lessonEntity);
     }
 
@@ -46,20 +47,14 @@ public class LessonService {
         return lessonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EntityType.LESSON, id));
     }
 
-    public FileDTO getStudentPDF(int id) {
+    public FileEntity getStudentPDF(int id) {
         LessonEntity lesson = lessonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EntityType.LESSON, id));
-        return new FileDTO(lesson.getStudentPDFContent(), lesson.getStudentPDFContentType(), getHeaders());
+        return fileRepository.findById(lesson.getStudentPDF()).orElseThrow(() -> new EntityNotFoundException(EntityType.FILE, id));
     }
 
-    public FileDTO getTeacherPDF(int id) {
+    public FileEntity getTeacherPDF(int id) {
         LessonEntity lesson = lessonRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EntityType.LESSON, id));
-        return new FileDTO(lesson.getTeacherPDFContent(), lesson.getTeacherPDFContentType(), getHeaders());
-    }
-
-    private HttpHeaders getHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Frame-Options", "ALLOW-FROM *");
-        return headers;
+        return fileRepository.findById(lesson.getTeacherPDF()).orElseThrow(() -> new EntityNotFoundException(EntityType.FILE, id));
     }
 
     public void deleteLesson(int id) {

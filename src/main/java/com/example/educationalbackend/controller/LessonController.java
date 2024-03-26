@@ -1,9 +1,10 @@
 package com.example.educationalbackend.controller;
 
-import com.example.educationalbackend.dto.FileDTO;
+import com.example.educationalbackend.entity.FileEntity;
 import com.example.educationalbackend.entity.LessonEntity;
 import com.example.educationalbackend.exception.exceptions.EntityNotFoundException;
 import com.example.educationalbackend.service.LessonService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,14 +48,20 @@ public class LessonController {
 
     @GetMapping("/{id}/student-pdf")
     public ResponseEntity<byte[]> getStudentPDF(@PathVariable int id) throws EntityNotFoundException {
-        FileDTO file = lessonService.getStudentPDF(id);
-        return ResponseEntity.ok().headers(file.headers()).contentType(MediaType.valueOf(file.contentType())).body(file.content());
+        FileEntity file = lessonService.getStudentPDF(id);
+        return ResponseEntity.ok().headers(getHeaders()).contentType(MediaType.valueOf(file.getFileType())).body(file.getContent());
     }
 
     @GetMapping("/{id}/teacher-pdf")
     public ResponseEntity<byte[]> getTeacherPDF(@PathVariable int id) throws EntityNotFoundException {
-        FileDTO file = lessonService.getTeacherPDF(id);
-        return ResponseEntity.ok().headers(file.headers()).contentType(MediaType.valueOf(file.contentType())).body(file.content());
+        FileEntity file = lessonService.getTeacherPDF(id);
+        return ResponseEntity.ok().headers(getHeaders()).contentType(MediaType.valueOf(file.getFileType())).body(file.getContent());
+    }
+
+    private HttpHeaders getHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Frame-Options", "ALLOW-FROM *");
+        return headers;
     }
 
     @DeleteMapping("/{id}")

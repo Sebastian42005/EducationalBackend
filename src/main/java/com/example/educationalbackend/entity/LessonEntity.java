@@ -21,10 +21,8 @@ public class LessonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
     String name;
-    byte[] teacherPDFContent;
-    String teacherPDFContentType;
-    byte[] studentPDFContent;
-    String studentPDFContentType;
+    int teacherPDF;
+    int studentPDF;
 
     @ManyToOne
     @JsonBackReference("subject-lessons")

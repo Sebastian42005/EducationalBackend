@@ -1,11 +1,9 @@
 package com.example.educationalbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 @Entity
 @Table(name = "subjects")
 public class SubjectEntity {
@@ -23,8 +22,8 @@ public class SubjectEntity {
     int id;
     String name;
 
-    byte[] image;
-    String imageType;
+    int file;
+    boolean free;
 
     @OneToMany(mappedBy = "subject")
     @JsonManagedReference("subject-lessons")
@@ -32,7 +31,8 @@ public class SubjectEntity {
 
     @ManyToMany
     @JoinTable(name = "teacher_subject",
-            joinColumns = { @JoinColumn(name = "teacher_id", referencedColumnName = "id") },
-            inverseJoinColumns = { @JoinColumn(name = "subject_id", referencedColumnName = "id") })
+            joinColumns = { @JoinColumn(name = "subject_id", referencedColumnName = "id") },
+            inverseJoinColumns = { @JoinColumn(name = "teacher_id", referencedColumnName = "id") })
+    @JsonIgnore
     private List<TeacherEntity> teachers;
 }
