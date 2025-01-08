@@ -1,6 +1,7 @@
 package com.example.educationalbackend.entity;
 
 import com.example.educationalbackend.entity.enums.WorkshopState;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,9 +27,12 @@ public class WorkshopEntity {
     @ManyToOne
     private SubjectEntity subject;
 
-    Instant date;
-    String school;
-    String message;
-    WorkshopState state;
-    String stateInfo;
+    private Instant date;
+    private String school;
+    private WorkshopState state;
+    @OneToMany(mappedBy = "workshop", cascade = CascadeType.ALL)
+    private List<MessageEntity> messages = new ArrayList<>();
+
+    @ManyToOne
+    private UserEntity sender;
 }

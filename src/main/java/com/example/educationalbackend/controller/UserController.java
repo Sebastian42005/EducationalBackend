@@ -5,6 +5,7 @@ import com.example.educationalbackend.dto.mapper.UserMapper;
 import com.example.educationalbackend.entity.UserEntity;
 import com.example.educationalbackend.exception.exceptions.UserNotLoggedInException;
 import com.example.educationalbackend.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -49,4 +50,8 @@ public class UserController {
         return this.userService.updateUser(user);
     }
 
+    @GetMapping("/workshop-requests")
+    public ResponseEntity<List<UserDto>> getUsersWithWorkshopRequests() {
+        return ResponseEntity.ok(userService.getUsersWithWorkshopRequests());
+    }
 }

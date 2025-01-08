@@ -23,6 +23,8 @@ public class LessonEntity {
     String name;
     int teacherPDF;
     int studentPDF;
+    String teacherPDFName;
+    String studentPDFName;
 
     @ManyToOne
     @JsonBackReference("subject-lessons")

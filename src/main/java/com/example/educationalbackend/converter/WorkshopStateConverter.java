@@ -22,7 +22,7 @@ public class WorkshopStateConverter implements AttributeConverter<WorkshopState,
             case "a" -> WorkshopState.ACCEPTED;
             case "r" -> WorkshopState.REJECTED;
             case "p" -> WorkshopState.PENDING;
-            default ->  throw new EnumConvertException(s + " is not known as a role");
+            default ->  throw new EnumConvertException(s + " is not known as a workshop state");
         };
     }
 }

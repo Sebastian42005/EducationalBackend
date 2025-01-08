@@ -31,8 +31,8 @@ public class SecurityConfig {
                 UserEntity.builder()
                         .role(UserRole.ADMIN)
                         .email("admin@gmail.com")
-                        .firstName("Admin")
-                        .lastName("Administrator")
+                        .firstName("Administrator")
+                        .lastName("")
                         .password(ShaUtils.decode("123456789"))
                         .build());
         userRepository.save(admin);

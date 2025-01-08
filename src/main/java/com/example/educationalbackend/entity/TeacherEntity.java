@@ -1,5 +1,6 @@
 package com.example.educationalbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,10 +19,11 @@ public class TeacherEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "teachers")
     private List<StudentEntity> students;
 
-
+    @JsonIgnore
     @ManyToMany(mappedBy = "teachers")
     private List<SubjectEntity> subjects;
 

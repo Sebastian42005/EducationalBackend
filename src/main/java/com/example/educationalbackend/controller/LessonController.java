@@ -35,6 +35,19 @@ public class LessonController {
         lessonService.setLessonPDFs(id, studentFile, teacherFile);
         return Map.of("message", "Image added successfully");
     }
+    
+    @PutMapping
+    public LessonEntity updateLesson(@RequestBody LessonEntity lessonEntity) {
+        return lessonService.updateLesson(lessonEntity);
+    }
+
+    @PutMapping("/update/{id}/pdf")
+    public Map<String, String> updateLessonPDFs(@PathVariable int id,
+                                             @RequestParam(value = "studentFile", required = false) MultipartFile studentFile,
+                                             @RequestParam(value = "teacherFile", required = false) MultipartFile teacherFile) throws EntityNotFoundException {
+        lessonService.updateLessonPDFs(id, studentFile, teacherFile);
+        return Map.of("message", "Image added successfully");
+    }
 
     @GetMapping
     public List<LessonEntity> getAllLessons() {

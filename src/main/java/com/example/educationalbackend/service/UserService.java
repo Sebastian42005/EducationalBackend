@@ -2,11 +2,13 @@ package com.example.educationalbackend.service;
 
 import com.example.educationalbackend.dto.UserDto;
 import com.example.educationalbackend.dto.mapper.UserMapper;
+import com.example.educationalbackend.entity.StudentEntity;
 import com.example.educationalbackend.entity.SubjectEntity;
 import com.example.educationalbackend.entity.TeacherEntity;
 import com.example.educationalbackend.entity.UserEntity;
 import com.example.educationalbackend.exception.exceptions.EntityNotFoundException;
 import com.example.educationalbackend.exception.enums.EntityType;
+import com.example.educationalbackend.repository.StudentRepository;
 import com.example.educationalbackend.repository.SubjectRepository;
 import com.example.educationalbackend.repository.TeacherRepository;
 import com.example.educationalbackend.repository.UserRepository;
@@ -25,6 +27,7 @@ public class UserService {
     private final TeacherRepository teacherRepository;
     private final SubjectRepository subjectRepository;
     private final UserMapper userMapper = new UserMapper();
+    private final StudentRepository studentRepository;
 
     @Transactional(readOnly = true)
     public UserEntity getOwnUser(String email) throws EntityNotFoundException {
@@ -59,6 +62,12 @@ public class UserService {
             }
         });
         dbUser.getTeacher().setSubjects(getAllDbSubjects(user.getTeacher()));
+        dbUser.getTeacher().getStudents().forEach(student -> {
+            if (user.getTeacher().getStudents().stream().noneMatch(current -> current.getId() == student.getId())) {
+                student.getTeachers().remove(dbUser.getTeacher());
+            }
+        });
+        dbUser.getTeacher().setStudents(getAllDBStudents(user.getTeacher()));
         return userMapper.apply(dbUser);
     }
 
@@ -70,5 +79,19 @@ public class UserService {
             }
             return sub;
         }).toList();
+    }
+
+    private List<StudentEntity> getAllDBStudents(TeacherEntity teacher) {
+        return teacher.getStudents().stream().map(item -> {
+            StudentEntity student = studentRepository.findById(item.getId()).orElseThrow(() -> new EntityNotFoundException(EntityType.STUDENT, item.getId()));
+            if (student.getTeachers().stream().noneMatch(current -> current.getId() == teacher.getId())) {
+                student.getTeachers().add(teacher);
+            }
+            return student;
+        }).toList();
+    }
+
+    public List<UserDto> getUsersWithWorkshopRequests() {
+        return userRepository.getUsersWithWorkshopRequest();
     }
 }
