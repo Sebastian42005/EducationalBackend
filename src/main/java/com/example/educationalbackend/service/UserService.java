@@ -13,9 +13,15 @@ import com.example.educationalbackend.repository.SubjectRepository;
 import com.example.educationalbackend.repository.TeacherRepository;
 import com.example.educationalbackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,5 +99,21 @@ public class UserService {
 
     public List<UserDto> getUsersWithWorkshopRequests() {
         return userRepository.getUsersWithWorkshopRequest();
+    }
+
+    @Transactional
+    public UserDto setUserProfilePicture(MultipartFile file, int id) throws IOException {
+        UserEntity user = getUser(id);
+        user.setImage(file.getBytes());
+        user.setContentType(file.getContentType());
+        return userMapper.apply(user);
+    }
+
+    public ResponseEntity<byte[]> getProfilePicture(int id) {
+        UserEntity user = getUser(id);
+        if (user.getContentType() == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf(user.getContentType())).body(user.getImage());
     }
 }

@@ -7,7 +7,9 @@ import com.example.educationalbackend.exception.exceptions.UserNotLoggedInExcept
 import com.example.educationalbackend.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +50,16 @@ public class UserController {
     @PutMapping
     UserDto updateUser(@RequestBody UserEntity user) {
         return this.userService.updateUser(user);
+    }
+
+    @PutMapping("/{id}/profile-image")
+    UserDto setUserProfilePicture(@RequestParam("file") MultipartFile file, @PathVariable int id) throws IOException {
+        return this.userService.setUserProfilePicture(file, id);
+    }
+
+    @GetMapping("/{id}/profile-image")
+    ResponseEntity<byte[]> getUserProfilePicture(@PathVariable int id) {
+        return this.userService.getProfilePicture(id);
     }
 
     @GetMapping("/workshop-requests")

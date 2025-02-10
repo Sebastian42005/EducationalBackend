@@ -38,6 +38,10 @@ public class UserEntity {
     private String lastName;
     private UserRole role;
     private String password;
+    @JsonIgnore
+    private byte[] image;
+    @JsonIgnore
+    private String contentType;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "teacher_id", referencedColumnName = "id")

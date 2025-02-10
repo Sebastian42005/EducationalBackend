@@ -3,6 +3,7 @@ package com.example.educationalbackend.controller;
 import com.example.educationalbackend.dto.WorkshopStateChangeDto;
 import com.example.educationalbackend.entity.MessageEntity;
 import com.example.educationalbackend.entity.WorkshopEntity;
+import com.example.educationalbackend.entity.enums.MessageType;
 import com.example.educationalbackend.service.UserService;
 import com.example.educationalbackend.service.WorkshopService;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +50,7 @@ public class WorkshopController {
     public ResponseEntity<MessageEntity> sendMessage(@PathVariable int id, @RequestBody String message, Principal principal) {
         MessageEntity messageEntity = new MessageEntity();
         messageEntity.setMessage(message);
+        messageEntity.setType(MessageType.MESSAGE);
         messageEntity.setSender(userService.getOwnUser(principal.getName()));
         return ResponseEntity.ok(workshopService.sendMessage(id, messageEntity));
     }

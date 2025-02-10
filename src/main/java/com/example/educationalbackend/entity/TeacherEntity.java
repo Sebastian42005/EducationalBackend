@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,13 +20,11 @@ public class TeacherEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @JsonIgnore
     @ManyToMany(mappedBy = "teachers")
-    private List<StudentEntity> students;
+    private List<StudentEntity> students = new ArrayList<>();
 
-    @JsonIgnore
     @ManyToMany(mappedBy = "teachers")
-    private List<SubjectEntity> subjects;
+    private List<SubjectEntity> subjects = new ArrayList<>();
 
     @Override
     public String toString() {
