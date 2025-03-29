@@ -15,8 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -82,9 +81,9 @@ public class SubjectService {
     }
 
     private List<SubjectEntity> getStudentSubjects(StudentEntity student) {
-        List<SubjectEntity> subjects = subjectRepository.getAllFree();
+        Set<SubjectEntity> subjects = new HashSet<>(subjectRepository.getAllFree());
         student.getTeachers().forEach(teacher -> subjects.addAll(getTeacherSubjects(teacher)));
-        return subjects;
+        return new ArrayList<>(subjects);
     }
 
     public void deleteSubject(int id) {

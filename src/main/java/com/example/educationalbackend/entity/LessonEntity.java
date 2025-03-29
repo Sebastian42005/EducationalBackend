@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,10 +21,11 @@ public class LessonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
     String name;
-    int teacherPDF;
-    int studentPDF;
-    String teacherPDFName;
-    String studentPDFName;
+
+    String description;
+
+    @OneToMany(mappedBy = "lesson", cascade = CascadeType.REMOVE)
+    List<FileEntity> files;
 
     @ManyToOne
     @JsonBackReference("subject-lessons")
