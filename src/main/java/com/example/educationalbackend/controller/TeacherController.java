@@ -37,9 +37,4 @@ public class TeacherController {
     public ResponseEntity<TeacherEntity> getTeacher(@PathVariable int id) {
         return ResponseEntity.ok(teacherService.getTeacher(id));
     }
-
-    @PutMapping("/{id}/student/{studentId}")
-    public ResponseEntity<TeacherEntity> addStudentToTeacher(@PathVariable int id, @PathVariable int studentId) {
-        return ResponseEntity.ok(teacherService.addStudentToTeacher(id, studentId));
-    }
 }

@@ -4,6 +4,6 @@ services:
     ports:
       - '5432:5432'
     environment:
-      - 'POSTGRES_USER=postgres'
-      - 'POSTGRES_DB=educational-db'
-      - 'POSTGRES_PASSWORD=1234'
+      - 'POSTGRES_USER=sebastian'
+      - 'POSTGRES_DB=educationaldb'
+      - 'POSTGRES_PASSWORD=eDu8asd4ASdkn5qyAsfeasf45a'

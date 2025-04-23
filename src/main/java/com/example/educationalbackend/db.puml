@@ -1,0 +1,84 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class WorkshopEntity {
+    int id
+    Instant date
+    String school
+    WorkshopState state
+}
+
+class UserEntity {
+    int id
+    String email
+    String firstName
+    String lastName
+    UserRole role
+    String password
+    byte[] image
+    String contentType
+}
+
+class TeacherEntity {
+    int id
+}
+
+class StudentEntity {
+    int id
+}
+
+class SubjectEntity {
+    int id
+    String name
+    String description
+    int file
+    boolean free
+}
+
+class MessageEntity {
+    int id
+    String message
+    Instant date
+    MessageType type
+}
+
+class LessonEntity {
+    int id
+    String name
+    String description
+}
+
+class FileEntity {
+    int id
+    byte[] content
+    String fileType
+    String name
+    boolean teacherOnly
+}
+
+WorkshopEntity "1" --> "1" SubjectEntity : subject
+WorkshopEntity "1" --> "1" UserEntity : sender
+WorkshopEntity "1" --> "*" MessageEntity : messages
+
+MessageEntity "*" --> "1" UserEntity : sender
+MessageEntity "*" --> "1" WorkshopEntity : workshop
+
+UserEntity "1" --> "0..1" TeacherEntity : teacher
+UserEntity "1" --> "0..1" StudentEntity : student
+UserEntity "1" --> "*" WorkshopEntity : bookedWorkshops
+
+SubjectEntity "1" --> "*" LessonEntity : lessons
+SubjectEntity "1" --> "*" WorkshopEntity : workshops
+SubjectEntity "*" --> "*" TeacherEntity : teachers
+
+StudentEntity "*" --> "*" TeacherEntity : teachers
+
+TeacherEntity "*" --> "*" StudentEntity : students
+TeacherEntity "*" --> "*" SubjectEntity : subjects
+
+LessonEntity "1" --> "*" FileEntity : files
+LessonEntity "*" --> "1" SubjectEntity : subject
+
+FileEntity "*" --> "1" LessonEntity : lesson
+
+@enduml

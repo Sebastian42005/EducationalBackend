@@ -13,7 +13,8 @@ public enum EntityType {
     TEACHER("Teacher"),
     STUDENT("Student"),
     FILE("File"),
-    WORKSHOP("Workshop");
+    WORKSHOP("Workshop"),
+    CLASS("Class");
 
     private final String name;
 }

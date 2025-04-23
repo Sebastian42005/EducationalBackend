@@ -24,6 +24,7 @@ public class SubjectService {
     private final SubjectRepository subjectRepository;
     private final FileRepository fileRepository;
     private final UserRepository userRepository;
+    private final ClassService classService;
 
     public SubjectEntity getSubject(int id) {
         return subjectRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EntityType.SUBJECT, id));
@@ -70,7 +71,7 @@ public class SubjectService {
         return switch (user.getRole()) {
             case ADMIN -> subjectRepository.findAll();
             case TEACHER -> getTeacherSubjects(user.getTeacher());
-            case STUDENT -> getStudentSubjects(user.getStudent());
+            case STUDENT -> classService.getStudentSubjects(principal);
         };
     }
 
@@ -78,12 +79,6 @@ public class SubjectService {
         List<SubjectEntity> subjects = subjectRepository.getAllFree();
         subjects.addAll(subjectRepository.getTeacherSubjects(teacher.getId()));
         return subjects;
-    }
-
-    private List<SubjectEntity> getStudentSubjects(StudentEntity student) {
-        Set<SubjectEntity> subjects = new HashSet<>(subjectRepository.getAllFree());
-        student.getTeachers().forEach(teacher -> subjects.addAll(getTeacherSubjects(teacher)));
-        return new ArrayList<>(subjects);
     }
 
     public void deleteSubject(int id) {

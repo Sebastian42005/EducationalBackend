@@ -1,5 +1,6 @@
 package com.example.educationalbackend.service;
 
+import com.example.educationalbackend.entity.ClassEntity;
 import com.example.educationalbackend.entity.StudentEntity;
 import com.example.educationalbackend.entity.SubjectEntity;
 import com.example.educationalbackend.exception.exceptions.EntityNotFoundException;
@@ -33,13 +34,5 @@ public class StudentService {
     @Transactional(readOnly = true)
     public StudentEntity getStudent(int id) {
         return studentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EntityType.STUDENT, id));
-    }
-
-    @Transactional(readOnly = true)
-    public List<SubjectEntity> getSubjects(int id) {
-        StudentEntity studentEntity = studentRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EntityType.STUDENT, id));
-        List<SubjectEntity> subjectEntities = new ArrayList<>();
-        studentEntity.getTeachers().forEach(teacher -> subjectEntities.addAll(teacher.getSubjects()));
-        return subjectEntities;
     }
 }

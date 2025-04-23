@@ -1,6 +1,7 @@
 package com.example.educationalbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,4 +31,8 @@ public class LessonEntity {
     @ManyToOne
     @JsonBackReference("subject-lessons")
     SubjectEntity subject;
+
+    @OneToMany(mappedBy = "lessonEntity")
+    @JsonIgnore
+    List<ClassLessonEntity> classes;
 }

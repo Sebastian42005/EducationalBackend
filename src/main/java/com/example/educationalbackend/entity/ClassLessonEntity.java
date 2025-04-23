@@ -7,22 +7,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
-@Table(name = "students")
-public class StudentEntity {
+@Table(name = "class_lessons")
+public class ClassLessonEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
 
-    @ManyToMany(mappedBy = "students")
-    List<ClassEntity> classes = new ArrayList<>();
+    @ManyToOne
+    @JsonIgnore
+    ClassEntity classEntity;
+
+    @ManyToOne
+    LessonEntity lessonEntity;
+
+    boolean showStudents = false;
 }

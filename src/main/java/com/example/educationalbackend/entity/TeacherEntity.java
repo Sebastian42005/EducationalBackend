@@ -21,17 +21,8 @@ public class TeacherEntity {
     private int id;
 
     @ManyToMany(mappedBy = "teachers")
-    private List<StudentEntity> students = new ArrayList<>();
-
-    @ManyToMany(mappedBy = "teachers")
     private List<SubjectEntity> subjects = new ArrayList<>();
 
-    @Override
-    public String toString() {
-        return "TeacherEntity{" +
-                "id=" + id +
-                ", students=" + students.stream().map(StudentEntity::getId).toList() +
-                ", subjects=" + subjects.stream().map(SubjectEntity::getName).toList() +
-                '}';
-    }
+    @OneToMany(mappedBy = "teacher")
+    List<ClassEntity> classes = new ArrayList<>();
 }

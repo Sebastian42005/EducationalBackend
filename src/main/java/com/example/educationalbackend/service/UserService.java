@@ -2,7 +2,6 @@ package com.example.educationalbackend.service;
 
 import com.example.educationalbackend.dto.UserDto;
 import com.example.educationalbackend.dto.mapper.UserMapper;
-import com.example.educationalbackend.entity.StudentEntity;
 import com.example.educationalbackend.entity.SubjectEntity;
 import com.example.educationalbackend.entity.TeacherEntity;
 import com.example.educationalbackend.entity.UserEntity;
@@ -14,7 +13,6 @@ import com.example.educationalbackend.repository.TeacherRepository;
 import com.example.educationalbackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -68,12 +65,6 @@ public class UserService {
             }
         });
         dbUser.getTeacher().setSubjects(getAllDbSubjects(user.getTeacher()));
-        dbUser.getTeacher().getStudents().forEach(student -> {
-            if (user.getTeacher().getStudents().stream().noneMatch(current -> current.getId() == student.getId())) {
-                student.getTeachers().remove(dbUser.getTeacher());
-            }
-        });
-        dbUser.getTeacher().setStudents(getAllDBStudents(user.getTeacher()));
         return userMapper.apply(dbUser);
     }
 
@@ -84,16 +75,6 @@ public class UserService {
                 sub.getTeachers().add(teacher);
             }
             return sub;
-        }).toList();
-    }
-
-    private List<StudentEntity> getAllDBStudents(TeacherEntity teacher) {
-        return teacher.getStudents().stream().map(item -> {
-            StudentEntity student = studentRepository.findById(item.getId()).orElseThrow(() -> new EntityNotFoundException(EntityType.STUDENT, item.getId()));
-            if (student.getTeachers().stream().noneMatch(current -> current.getId() == teacher.getId())) {
-                student.getTeachers().add(teacher);
-            }
-            return student;
         }).toList();
     }
 
